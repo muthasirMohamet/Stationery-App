@@ -142,33 +142,57 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return Center(child: Text("No products available."));
     } else {
       return ListView.builder(
-  itemCount: products.length,
-  itemBuilder: (context, index) {
-    final product = products[index]; // Each item in the list
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-      elevation: 3,
-      child: ListTile(
-        title: Text(
-          product['name'], // Accessing product details
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text('Price: ${product['price']}'),
-        trailing: ElevatedButton.icon(
-          icon: Icon(Icons.add_shopping_cart),
-          label: Text('Add to Cart'),
-          onPressed: () {
-            addToCart(product); // Add the product to the cart
-          },
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white, backgroundColor: Colors.green,
-          ),
-        ),
-      ),
-    );
-  },
-);
-
+        shrinkWrap:
+            true, // Ensures that the ListView takes up only the space it needs
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          final product = products[index];
+          return Card(
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+            elevation: 3,
+            child: ListTile(
+              title: Text(
+                product['name'],
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text('Price: ${product['price']}'),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditProductScreen(
+                            product: product,
+                          ),
+                        ),
+                      ).then((_) =>
+                          fetchProducts()); // Fetch products after editing
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      deleteProduct(product['id']);
+                    },
+                  ),
+                  ElevatedButton.icon(
+                    icon: Icon(Icons.add_shopping_cart),
+                    label: Text('Add to Cart'),
+                    onPressed: () {
+                      addToCart(product); // Add product to cart
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
         },
       );
@@ -186,7 +210,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Dashboard')),
+      appBar: AppBar(
+        title: Text('Dashboard'),
+        automaticallyImplyLeading: false, // Hides the back button
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/login',
+                (route) => false,
+              ); // Navigate back to login
+            },
+          ),
+        ], 
+      ),
       body: _selectedIndex == 1
           ? _buildProductList() // Show the product list when "View All" is selected
           : SingleChildScrollView(

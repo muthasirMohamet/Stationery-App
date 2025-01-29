@@ -9,6 +9,8 @@ class AppRouter {
     switch (settings.name) {
       case '/login':
         return MaterialPageRoute(builder: (_) => LoginScreen());
+      case '/user/register':
+        return MaterialPageRoute(builder: (_) => UserRegisterScreen());
       case '/register':
         return MaterialPageRoute(builder: (_) => UserRegisterScreen());
       case '/adminPortal':
